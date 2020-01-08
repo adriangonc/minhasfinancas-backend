@@ -4,7 +4,7 @@ create table financas.usuario
 	nome character varying(150),
 	email character varying(150),
 	senha character varying(100),
-	data_cadastro date
+	data_cadastro date default now()
 );
 
 create table financas.lancamento
@@ -14,9 +14,8 @@ create table financas.lancamento
 	mes integer not null,
 	ano integer not null,
 	valor numeric(16,2),
-	tipo character varying(20),
-	status character varying(20),
-	id_usuario bigint references financas.usuario (id),
-	data_cadastro date
-	
+	tipo character varying(20) check (tipo in ('RECEITA', 'DESPESA')) not null,
+	status character varying(20) check (status in ('PENDENTE', 'CANCELADO', 'EFETIVADO')) not null,
+	id_usuario bigint references financas.usuario (id) not null,
+	data_cadastro date default now()
 );
