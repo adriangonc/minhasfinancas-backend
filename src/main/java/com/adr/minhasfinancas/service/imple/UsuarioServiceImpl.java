@@ -3,6 +3,7 @@ package com.adr.minhasfinancas.service.imple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.adr.minhasfinancas.exception.RegraNegocioException;
 import com.adr.minhasfinancas.model.entity.Usuario;
 import com.adr.minhasfinancas.model.repository.UsuarioRepository;
 import com.adr.minhasfinancas.service.UsuarioService;
@@ -31,8 +32,10 @@ public class UsuarioServiceImpl implements UsuarioService{
 
 	@Override
 	public void validarEmail(String email) {
-		// TODO Auto-generated method stub
-		
+		boolean existe = repository.existsByEmail(email);
+		if(existe) {
+			throw new RegraNegocioException("Este e-mail não está disponível.");
+		}
 	}
 
 }
