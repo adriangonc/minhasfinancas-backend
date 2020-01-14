@@ -12,8 +12,9 @@ import lombok.Data;
 
 @Entity
 @Table(name = "usuario", schema = "financas")
-@Data
 @Builder
+@Data
+
 public class Usuario {
 	
 	@Id
