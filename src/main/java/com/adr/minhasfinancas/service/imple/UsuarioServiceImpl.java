@@ -1,6 +1,5 @@
 package com.adr.minhasfinancas.service.imple;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.adr.minhasfinancas.exception.RegraNegocioException;

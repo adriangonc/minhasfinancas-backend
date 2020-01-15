@@ -51,7 +51,7 @@ public class Lancamento {
 	private BigDecimal valor;
 	
 	@Column(name = "data_cadastro")
-	@Convert(converter = Jsr310JpaConverters.class) //O spring boot converte o localdate, pois essa versão do hybernate ainda não trabalha com LocalDate.
+	//@Convert(converter = Jsr310JpaConverters.class) //O spring boot converte o localdate, pois essa versão do hybernate ainda não trabalha com LocalDate.
 	private LocalDate dataCadastro;
 	
 	@Column(name = "tipo")
