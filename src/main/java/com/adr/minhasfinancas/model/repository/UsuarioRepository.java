@@ -1,7 +1,5 @@
 package com.adr.minhasfinancas.model.repository;
 
-import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.adr.minhasfinancas.model.entity.Usuario;

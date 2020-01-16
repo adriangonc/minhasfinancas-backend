@@ -43,10 +43,8 @@ public class UsuarioRepositoryTest {
 		int quantidadeUsuario = 10;
 		for(int i = 0; i < quantidadeUsuario; i++) {
 			Usuario usuario = Usuario.builder().nome("usuario").email("usuarioteste" + i + "@email.com.br").build();
-			//System.out.println(usuario.getEmail());
 			repository.save(usuario);
-		}
-		
+		}	
 		boolean result = repository.findAll().size() == quantidadeUsuario;
 		Assertions.assertThat(result).isTrue();
 	}
