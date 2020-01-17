@@ -1,7 +1,11 @@
 package com.adr.minhasfinancas.service.imple;
 
-import org.springframework.stereotype.Service;
+import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.adr.minhasfinancas.exception.ErroAutencitacaoException;
 import com.adr.minhasfinancas.exception.RegraNegocioException;
 import com.adr.minhasfinancas.model.entity.Usuario;
 import com.adr.minhasfinancas.model.repository.UsuarioRepository;
@@ -19,22 +23,32 @@ public class UsuarioServiceImpl implements UsuarioService{
 
 	@Override
 	public Usuario autenticar(String email, String senha) {
-		// TODO Auto-generated method stub
-		return null;
+		Optional<Usuario> usuario = repository.findByEmail(email);
+		if(usuario.isPresent()) {
+			throw new ErroAutencitacaoException("Usuário não encontrado.");
+		}
+		
+		if(usuario.get().getSenha().equals(senha)) {
+			throw new ErroAutencitacaoException("Senha inváliad.");
+		}
+		
+		return usuario.get();
 	}
 
 	@Override
+	@Transactional
 	public Usuario salvarUsuario(Usuario usuario) {
-		// TODO Auto-generated method stub
-		return null;
+		emailEhValido(usuario.getEmail());
+		return repository.save(usuario);
 	}
 
 	@Override
-	public void validarEmail(String email) {
+	public boolean emailEhValido(String email) {
 		boolean existe = repository.existsByEmail(email);
 		if(existe) {
 			throw new RegraNegocioException("Este e-mail não está disponível.");
 		}
+		return true;
 	}
 
 }
