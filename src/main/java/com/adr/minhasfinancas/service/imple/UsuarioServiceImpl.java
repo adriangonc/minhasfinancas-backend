@@ -24,11 +24,11 @@ public class UsuarioServiceImpl implements UsuarioService{
 	@Override
 	public Usuario autenticar(String email, String senha) {
 		Optional<Usuario> usuario = repository.findByEmail(email);
-		if(usuario.isPresent()) {
+		if(!usuario.isPresent()) {
 			throw new ErroAutencitacaoException("Usuário não encontrado.");
 		}
 		
-		if(usuario.get().getSenha().equals(senha)) {
+		if(!usuario.get().getSenha().equals(senha)) {
 			throw new ErroAutencitacaoException("Senha inváliad.");
 		}
 		

@@ -1,16 +1,20 @@
 package com.adr.minhasfinancas.model.service;
 
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.adr.minhasfinancas.exception.RegraNegocioException;
+import com.adr.minhasfinancas.model.entity.Usuario;
 import com.adr.minhasfinancas.model.repository.UsuarioRepository;
 import com.adr.minhasfinancas.service.UsuarioService;
 import com.adr.minhasfinancas.service.imple.UsuarioServiceImpl;
@@ -23,10 +27,10 @@ public class UsuarioServiceTest {
 
 	UsuarioService service;
 
+	@MockBean
 	UsuarioRepository repository;
 
 	public void setUp() {
-		repository = Mockito.mock(UsuarioRepository.class);
 		service = new UsuarioServiceImpl(repository);
 	}
 	
@@ -54,5 +58,24 @@ public class UsuarioServiceTest {
 		Assertions.assertThrows(RegraNegocioException.class, () -> {
 			service.emailEhValido(EMAIL_TEST);
 		});
+	}
+	
+	@Test
+	@Order(3)
+	@DisplayName("Deve autenticar um usuário com sucesso")
+	public void deveAutenticarUmUsuarioComSucesso() {
+		setUp();
+		String senha = "Senha";
+		
+		Usuario usuario = Usuario.builder().email(EMAIL_TEST).senha(senha).id(1L).build();
+		Mockito.when(repository.findByEmail(EMAIL_TEST)).thenReturn(Optional.of(usuario));
+		
+		Usuario result = service.autenticar(EMAIL_TEST, senha);
+		boolean usuarioEstaAutenticado = false;
+		if(result.getId() != null) {
+			usuarioEstaAutenticado = true;
+		}
+		
+		Assertions.assertTrue(usuarioEstaAutenticado);
 	}
 }
