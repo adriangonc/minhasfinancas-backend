@@ -1,6 +1,8 @@
 package com.adr.minhasfinancas.model.service;
 
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.adr.minhasfinancas.exception.AuthenticateErrorException;
 import com.adr.minhasfinancas.exception.BusinessRuleException;
 import com.adr.minhasfinancas.model.entity.Usuario;
 import com.adr.minhasfinancas.model.repository.UsuarioRepository;
@@ -78,4 +81,37 @@ public class UsuarioServiceTest {
 		
 		Assertions.assertTrue(userIsAuthenticated);
 	}
+	
+	@Test
+	@Order(4)
+	@DisplayName("Deve lançar exception de autenticação quando não encontrar usuário cadastrado com o email informado")
+	public void shouldThrowExceptionWhenNoFindRegisteredUserWhinInformedEmail() {
+		setUp();
+		Mockito.when(repository.findByEmail(Mockito.anyString())).thenReturn(Optional.empty());
+		
+		Throwable exception = Assertions.assertThrows(AuthenticateErrorException.class, () -> {
+			service.authenticate(EMAIL_TEST, "codigo");
+		});
+		
+		Assertions.assertTrue(exception.getMessage() == "Usuário não encontrado.");
+	}
+	
+	@Test
+	@Order(5)
+	@DisplayName("Deve lançar exception de autenticação senha estiver incorreta")
+	public void shouldThrowExceptionWhenPasswordDoesntHit() {
+		setUp();
+		String password = "senha";
+		Usuario user = Usuario.builder().email(EMAIL_TEST).senha(password).build();
+		
+		Mockito.when(repository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(user));
+		
+		Throwable exception = Assertions.assertThrows(AuthenticateErrorException.class, () -> {
+			service.authenticate(EMAIL_TEST, "codigo");
+		});
+		
+		Assertions.assertTrue(exception.getMessage() == "Senha inváliada.");
+	}
+	
+	
 }

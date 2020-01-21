@@ -29,7 +29,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		}
 		
 		if(!usuario.get().getSenha().equals(senha)) {
-			throw new AuthenticateErrorException("Senha inváliad.");
+			throw new AuthenticateErrorException("Senha inváliada.");
 		}
 		
 		return usuario.get();
