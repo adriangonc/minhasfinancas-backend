@@ -13,7 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.adr.minhasfinancas.exception.RegraNegocioException;
+import com.adr.minhasfinancas.exception.BusinessRuleException;
 import com.adr.minhasfinancas.model.entity.Usuario;
 import com.adr.minhasfinancas.model.repository.UsuarioRepository;
 import com.adr.minhasfinancas.service.UsuarioService;
@@ -37,45 +37,45 @@ public class UsuarioServiceTest {
 	@Test()
 	@Order(1)
 	@DisplayName("Verifica se o email e válido")
-	public void deveValidarEmailNaoDeveRetornarException() {
+	public void shouldValidateIfEmailIsValid() {
 		// Cenario
 		setUp();
 		Mockito.when(repository.existsByEmail(Mockito.anyString())).thenReturn(false);
 		
 		// Ação
-		Assertions.assertTrue(service.emailEhValido(EMAIL_TEST));
+		Assertions.assertTrue(service.emailIsValid(EMAIL_TEST));
 	}
 
 	@Test()
 	@Order(2)
 	@DisplayName("Verifica se o email não e válido")
-	public void deveValidarEmailDeveRetornarException() {
+	public void shouldValidateEmailShouldReturnException() {
 		// Cenario
 		setUp();
-		Mockito.when(repository.existsByEmail(Mockito.anyString())).thenThrow(RegraNegocioException.class);
+		Mockito.when(repository.existsByEmail(Mockito.anyString())).thenThrow(BusinessRuleException.class);
 		
 		// Ação
-		Assertions.assertThrows(RegraNegocioException.class, () -> {
-			service.emailEhValido(EMAIL_TEST);
+		Assertions.assertThrows(BusinessRuleException.class, () -> {
+			service.emailIsValid(EMAIL_TEST);
 		});
 	}
 	
 	@Test
 	@Order(3)
 	@DisplayName("Deve autenticar um usuário com sucesso")
-	public void deveAutenticarUmUsuarioComSucesso() {
+	public void shouldAuthenticateAUserWithSuccess() {
 		setUp();
-		String senha = "Senha";
+		String password = "Senha";
 		
-		Usuario usuario = Usuario.builder().email(EMAIL_TEST).senha(senha).id(1L).build();
-		Mockito.when(repository.findByEmail(EMAIL_TEST)).thenReturn(Optional.of(usuario));
+		Usuario user = Usuario.builder().email(EMAIL_TEST).senha(password).id(1L).build();
+		Mockito.when(repository.findByEmail(EMAIL_TEST)).thenReturn(Optional.of(user));
 		
-		Usuario result = service.autenticar(EMAIL_TEST, senha);
-		boolean usuarioEstaAutenticado = false;
+		Usuario result = service.authenticate(EMAIL_TEST, password);
+		boolean userIsAuthenticated = false;
 		if(result.getId() != null) {
-			usuarioEstaAutenticado = true;
+			userIsAuthenticated = true;
 		}
 		
-		Assertions.assertTrue(usuarioEstaAutenticado);
+		Assertions.assertTrue(userIsAuthenticated);
 	}
 }

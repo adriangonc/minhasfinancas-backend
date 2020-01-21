@@ -32,8 +32,8 @@ public class UsuarioRepositoryTest {
 	TestEntityManager entityManager;
 
 	@Test
-	public void deveVerificarAExistenciaDeUmEmail() {
-		Usuario usuario = criarUsuario();
+	public void shouldCheckIfEmailIsValid() {
+		Usuario usuario = createUser();
 		entityManager.persist(usuario);
 		boolean result = repository.existsByEmail(EMAIL_TEST);
 		repository.delete(usuario);
@@ -41,32 +41,32 @@ public class UsuarioRepositoryTest {
 	}
 	
 	@Test
-	public void deveRetornarFalsoQuandoNaoHouverUsuarioCadastradoComEmail() {
+	public void shouldReturnFalseIfEmailIsNotInTheDataBase() {
 		boolean result = repository.existsByEmail(EMAIL_TEST);
 		Assertions.assertThat(result).isFalse();
 	}
 	
 	@Test
-	public void deveEfetuarACargadeDezRegistros() {
-		int quantidadeUsuario = 10;
-		for(int i = 0; i < quantidadeUsuario; i++) {
-			Usuario usuario = Usuario.builder().nome("usuario").email("usuarioteste" + i + "@email.com.br").build();
-			repository.save(usuario);
+	public void shouldInsertTenUsersInDataBase() {
+		int numberOfUsers = 10;
+		for(int i = 0; i < numberOfUsers; i++) {
+			Usuario user = Usuario.builder().nome("usuario").email("usuarioteste" + i + "@email.com.br").build();
+			repository.save(user);
 		}	
-		boolean result = repository.findAll().size() == quantidadeUsuario;
+		boolean result = repository.findAll().size() == numberOfUsers;
 		Assertions.assertThat(result).isTrue();
 	}
 	
 	@Test
-	public void devePersistirUmUsuarioNaBaseDeDados() {
-		Usuario usuario = criarUsuario();
-		Usuario usuarioSalvo = repository.save(usuario);
-		Assertions.assertThat(usuarioSalvo.getId()).isNotNull();
+	public void shouldSaveAnUserInDataBase() {
+		Usuario user = createUser();
+		Usuario savedUser = repository.save(user);
+		Assertions.assertThat(savedUser.getId()).isNotNull();
 	}
 	
 	@Test
-	public void deveBuscarUmUsuarioPorEmail() {
-		Usuario usuario = criarUsuario();
+	public void shouldFindAUserByEmail() {
+		Usuario usuario = createUser();
 		entityManager.persist(usuario);
 		
 		Optional<Usuario> resultado = repository.findByEmail(EMAIL_TEST);
@@ -75,13 +75,13 @@ public class UsuarioRepositoryTest {
 	}
 
 	@Test
-	public void deveRetornarVazioAoBuscarUmUsuarioPorEmailQuandoNaoExisteNaBase() {
-		Optional<Usuario> resultado = repository.findByEmail(EMAIL_TEST);
+	public void shouldReturnVoidWhenToSearchANotExistentUserInDataBase() {
+		Optional<Usuario> result = repository.findByEmail(EMAIL_TEST);
 		
-		Assertions.assertThat(resultado.isPresent()).isFalse();
+		Assertions.assertThat(result.isPresent()).isFalse();
 	}
 	
-	public static Usuario criarUsuario() {
+	public static Usuario createUser() {
 		return Usuario
 				.builder()
 				.nome("Usuario")

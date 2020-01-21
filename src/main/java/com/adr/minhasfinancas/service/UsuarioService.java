@@ -4,9 +4,9 @@ import com.adr.minhasfinancas.model.entity.Usuario;
 
 public interface UsuarioService {
 
-	Usuario autenticar(String email, String senha);
+	Usuario authenticate(String email, String password);
 	
-	Usuario salvarUsuario(Usuario usuario);
+	Usuario saveUser(Usuario user);
 	
-	boolean emailEhValido(String email);
+	boolean emailIsValid(String email);
 }
