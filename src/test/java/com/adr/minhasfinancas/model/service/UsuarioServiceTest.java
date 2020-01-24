@@ -18,7 +18,6 @@ import com.adr.minhasfinancas.exception.AuthenticateErrorException;
 import com.adr.minhasfinancas.exception.BusinessRuleException;
 import com.adr.minhasfinancas.model.entity.Usuario;
 import com.adr.minhasfinancas.model.repository.UsuarioRepository;
-import com.adr.minhasfinancas.service.UsuarioService;
 import com.adr.minhasfinancas.service.imple.UsuarioServiceImpl;
 
 @ExtendWith(SpringExtension.class)
