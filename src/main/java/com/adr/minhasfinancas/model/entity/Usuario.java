@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class Usuario {
 	
 	@Id
-	@Column(name = "id")
+	@Column(name = "id_usuario")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	

@@ -38,6 +38,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 	@Override
 	@Transactional
 	public Usuario saveUser(Usuario usuario) {
+		
 		emailIsValid(usuario.getEmail());
 		return repository.save(usuario);
 	}
