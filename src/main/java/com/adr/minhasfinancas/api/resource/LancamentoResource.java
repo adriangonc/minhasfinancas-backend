@@ -1,13 +1,18 @@
 package com.adr.minhasfinancas.api.resource;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.adr.minhasfinancas.api.dto.LancamentoDTO;
@@ -19,23 +24,42 @@ import com.adr.minhasfinancas.model.enums.TipoLancamento;
 import com.adr.minhasfinancas.service.LancamentoService;
 import com.adr.minhasfinancas.service.UsuarioService;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/lancamentos")
+@RequiredArgsConstructor
 public class LancamentoResource {
 
-	private LancamentoService service;
-	private UsuarioService usuarioService;
+	private final LancamentoService service;
+	private final UsuarioService usuarioService;
 
-	public LancamentoResource(LancamentoService service) {
-		this.service = service;
+	@GetMapping
+	public ResponseEntity<Object> search(@RequestParam(value = "descricao", required = false) String descricao,
+			@RequestParam(value = "mes", required = false) Integer mes,
+			@RequestParam(value = "ano", required = false) Integer ano, @RequestParam("usuario") Long idUsuario) {
+		Lancamento filter = new Lancamento();
+		filter.setDescricao(descricao);
+		filter.setMes(mes);
+		filter.setAno(ano);
+
+		Optional<Usuario> user = usuarioService.userById(idUsuario);
+		if (!user.isPresent()) {
+			return ResponseEntity.badRequest().body("Não foi possível realizar a consulta!");
+		} else {
+			filter.setUsuario(user.get());
+		}
+
+		List<Lancamento> lancamentos = service.search(filter);
+		return ResponseEntity.ok(lancamentos);
 	}
 	
 	@PostMapping
-	public ResponseEntity save(@RequestBody LancamentoDTO dto) {
+	public ResponseEntity<Object> save(@RequestBody LancamentoDTO dto) {
 		try {
 			Lancamento lancamento = converter(dto);
 			service.save(lancamento);
-			return new ResponseEntity(lancamento, HttpStatus.CREATED);
+			return new ResponseEntity<Object>(lancamento, HttpStatus.CREATED);
 		} catch (BusinessRuleException e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(e.getMessage());
@@ -54,7 +78,7 @@ public class LancamentoResource {
 				e.printStackTrace();
 				return ResponseEntity.badRequest().body(e.getMessage());
 			}
-		}).orElseGet(() -> new ResponseEntity("Lançamento não encontrado!", HttpStatus.BAD_REQUEST));
+		}).orElseGet(() -> new ResponseEntity<String>("Lançamento não encontrado!", HttpStatus.BAD_REQUEST));
 	}
 	
 	@DeleteMapping("{id}")
@@ -63,7 +87,7 @@ public class LancamentoResource {
 			service.delete(entity);
 			return new ResponseEntity(HttpStatus.NO_CONTENT);
 		}).orElseGet(() -> 
-			new ResponseEntity("Lançamento não encontrado! ", HttpStatus.BAD_REQUEST));
+			new ResponseEntity<String>("Lançamento não encontrado! ", HttpStatus.BAD_REQUEST));
 	}
 	
 	private Lancamento converter(LancamentoDTO dto) {
@@ -78,8 +102,12 @@ public class LancamentoResource {
 				() -> new BusinessRuleException("Usuário não encontrado para o id: " + dto.getUsuario().toString()));
 		
 		lancamento.setUsuario(usuario);
-		lancamento.setTipo(TipoLancamento.valueOf(dto.getTipo()));
-		lancamento.setStatus(StatusLancamento.valueOf(dto.getStatus()));
+		if(dto.getTipo() != null) {
+			lancamento.setTipo(TipoLancamento.valueOf(dto.getTipo()));
+		}		
+		if(dto.getStatus() != null) {
+			lancamento.setStatus(StatusLancamento.valueOf(dto.getStatus()));
+		}
 		
 		return lancamento;
 	}
