@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException.BadRequest;
 
+import com.adr.minhasfinancas.api.dto.AtualizaStatusDTO;
 import com.adr.minhasfinancas.api.dto.LancamentoDTO;
 import com.adr.minhasfinancas.exception.BusinessRuleException;
 import com.adr.minhasfinancas.model.entity.Lancamento;
@@ -74,6 +76,24 @@ public class LancamentoResource {
 				lancamento.setId(entity.getId());
 				service.update(lancamento);
 				return ResponseEntity.ok(lancamento);
+			} catch (BusinessRuleException e) {
+				e.printStackTrace();
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity<String>("Lançamento não encontrado!", HttpStatus.BAD_REQUEST));
+	}
+	
+	@PutMapping("{id}/atualiza-status")
+	public ResponseEntity updateStatus( @PathVariable Long id, @RequestBody AtualizaStatusDTO dto) {
+		return service.findById(id).map( entity -> {
+			StatusLancamento selectedState = StatusLancamento.valueOf(dto.getStatus());
+			if(selectedState == null) {
+				return ResponseEntity.badRequest().body("Impossível atualizar status de lançamento!");
+			}
+			try {
+				entity.setStatus(selectedState);
+				service.update(entity);
+				return ResponseEntity.ok(entity);
 			} catch (BusinessRuleException e) {
 				e.printStackTrace();
 				return ResponseEntity.badRequest().body(e.getMessage());
