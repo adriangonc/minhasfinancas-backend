@@ -2,6 +2,7 @@ package com.adr.minhasfinancas.model.service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -121,4 +122,46 @@ public class LancamentoTestService {
 					.contains(lancamento);
 	}
 	
+	@Test
+	public void deveAtualizarOStatusDeUmLancamento() {
+		Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+		lancamento.setId(1532l);
+		lancamento.setStatus(StatusLancamento.PENDENTE);
+		
+		StatusLancamento novoStatus = StatusLancamento.EFETIVADO;
+		Mockito.doReturn(lancamento).when(service).update(lancamento);
+		
+		service.updateStatus(lancamento, novoStatus);
+		
+		Assertions.assertThat(lancamento.getStatus()).isEqualTo(novoStatus);
+		Mockito.verify(service).update(lancamento);
+	}
+	
+	@Test 
+	public void deveObterUmLancamentoPorId() {
+		Long id = 1532L;
+		
+		Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+		lancamento.setId(id);
+		
+		Mockito.when(repository.findById(id)).thenReturn(Optional.of(lancamento));
+		
+		Optional<Lancamento> resultado = service.findById(id);
+		
+		Assertions.assertThat(resultado.isPresent()).isTrue();
+	}
+	
+	@Test 
+	public void deveRetornarVazioQuandoLancamentoNaoExiste() {
+		Long id = 1532L;
+		
+		Lancamento lancamento = LancamentoRepositoryTest.criarLancamento();
+		lancamento.setId(id);
+		
+		Mockito.when(repository.findById(id)).thenReturn(Optional.empty());
+		
+		Optional<Lancamento> resultado = service.findById(id);
+		
+		Assertions.assertThat(resultado.isPresent()).isFalse();
+	}
 }
