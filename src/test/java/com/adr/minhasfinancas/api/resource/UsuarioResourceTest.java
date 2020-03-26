@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.adr.minhasfinancas.api.dto.UsuarioDTO;
+import com.adr.minhasfinancas.exception.AuthenticateErrorException;
 import com.adr.minhasfinancas.model.entity.Usuario;
 import com.adr.minhasfinancas.service.LancamentoService;
 import com.adr.minhasfinancas.service.UsuarioService;
@@ -69,6 +70,27 @@ public class UsuarioResourceTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("id").value(usuario.getId()))
 				.andExpect(MockMvcResultMatchers.jsonPath("nome").value(usuario.getNome()))
 				.andExpect(MockMvcResultMatchers.jsonPath("email").value(usuario.getEmail()));
+	}
+	
+	@Test
+	public void deveRetornarBadRequestAoObterErroDeAutenticacao() throws Exception {
+		UsuarioDTO dto = UsuarioDTO.builder()
+				.email(EMAIL_USUARIO)
+				.senha(SENHA_USUARIO)
+				.build();
+		
+		Mockito.when(service.authenticate(EMAIL_USUARIO, SENHA_USUARIO)).thenThrow(AuthenticateErrorException.class);
+		
+		String json = new ObjectMapper().writeValueAsString(dto);
+		
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.post(API.concat("/autenticar"))
+				.accept(JASON)
+				.contentType(JASON)
+				.content(json);
+			
+		mvc.perform(request)
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
 	}
 
 }
