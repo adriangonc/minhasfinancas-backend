@@ -164,4 +164,17 @@ public class LancamentoTestService {
 		
 		Assertions.assertThat(resultado.isPresent()).isFalse();
 	}
+	
+	@Test
+	public void deveLancarErrosAoValidarUmLancamento() {
+		Lancamento lancamento = new Lancamento();
+		
+		Throwable erro = Assertions.catchThrowable( () -> service.validate(lancamento) );
+		Assertions.assertThat(erro).isInstanceOf(BusinessRuleException.class).hasMessage("Informe uma descrição válida!");
+		
+		lancamento.setDescricao("Teste");
+		erro = Assertions.catchThrowable( () -> service.validate(lancamento) );
+		Assertions.assertThat(erro).isInstanceOf(BusinessRuleException.class).hasMessage("Informe um mês válido!");
+
+	}
 }
