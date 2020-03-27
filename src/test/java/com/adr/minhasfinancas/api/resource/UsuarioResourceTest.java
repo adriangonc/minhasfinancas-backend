@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.adr.minhasfinancas.api.dto.UsuarioDTO;
 import com.adr.minhasfinancas.exception.AuthenticateErrorException;
+import com.adr.minhasfinancas.exception.BusinessRuleException;
 import com.adr.minhasfinancas.model.entity.Usuario;
 import com.adr.minhasfinancas.service.LancamentoService;
 import com.adr.minhasfinancas.service.UsuarioService;
@@ -91,6 +92,61 @@ public class UsuarioResourceTest {
 			
 		mvc.perform(request)
 				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
+	
+	@Test
+	public void deveSalvarUmNovoUsuario() throws Exception {
+		UsuarioDTO dto = UsuarioDTO.builder()
+				.email(EMAIL_USUARIO)
+				.senha(SENHA_USUARIO)
+				.build();
+		
+		Usuario usuario = Usuario.builder()
+				.id(1L).email(EMAIL_USUARIO)
+				.senha(SENHA_USUARIO)
+				.build();
+		
+		Mockito.when(service.saveUser(Mockito.any(Usuario.class))).thenReturn(usuario);
+		
+		String json = new ObjectMapper().writeValueAsString(dto);
+		
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.post(API)
+				.accept(JASON)
+				.contentType(JASON)
+				.content(json);
+			
+		mvc.perform(request)
+				.andExpect(MockMvcResultMatchers.status().isCreated())
+				.andExpect(MockMvcResultMatchers.jsonPath("id").value(usuario.getId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("nome").value(usuario.getNome()))
+				.andExpect(MockMvcResultMatchers.jsonPath("email").value(usuario.getEmail()));
+	}
+	
+	@Test
+	public void deveRetornarBadRequesAoTentarCriarUmNovoUsuarioInvalido() throws Exception {
+		UsuarioDTO dto = UsuarioDTO.builder()
+				.email(EMAIL_USUARIO)
+				.senha(SENHA_USUARIO)
+				.build();
+		
+		Usuario usuario = Usuario.builder()
+				.id(1L).email(EMAIL_USUARIO)
+				.senha(SENHA_USUARIO)
+				.build();
+		
+		Mockito.when(service.saveUser(Mockito.any(Usuario.class))).thenThrow(BusinessRuleException.class);
+		
+		String json = new ObjectMapper().writeValueAsString(dto);
+		
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+				.post(API)
+				.accept(JASON)
+				.contentType(JASON)
+				.content(json);
+			
+		mvc.perform(request).andExpect(MockMvcResultMatchers.status().isBadRequest());
+				
 	}
 
 }
