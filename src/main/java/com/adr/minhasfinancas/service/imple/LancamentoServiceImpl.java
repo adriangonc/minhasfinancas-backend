@@ -100,8 +100,8 @@ public class LancamentoServiceImpl implements LancamentoService{
 	@Override
 	@Transactional(readOnly = true)
 	public BigDecimal balanceByUser(Long id) {
-		BigDecimal revenue = repository.balanceByLaunchTypeAndUser(id, TipoLancamento.RECEITA);
-		BigDecimal expenses = repository.balanceByLaunchTypeAndUser(id, TipoLancamento.DESPESA);
+		BigDecimal revenue = repository.balanceByLaunchTypeAndUserAndStatus(id, TipoLancamento.RECEITA, StatusLancamento.EFETIVADO);
+		BigDecimal expenses = repository.balanceByLaunchTypeAndUserAndStatus(id, TipoLancamento.DESPESA, StatusLancamento.EFETIVADO);
 		if(revenue == null) {
 			revenue = BigDecimal.ZERO;
 		}
