@@ -1,3 +1,5 @@
+create schema financas;
+
 create table financas.usuario
 (
 	id bigserial not null primary key,
