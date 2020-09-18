@@ -29,8 +29,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @AutoConfigureMockMvc
 public class UsuarioResourceTest {
 
-	private static final String SENHA_USUARIO = "1532";
-	private static final String EMAIL_USUARIO = "usuario@email.com";
+	private static final String USER_PASSWORD = "1532";
+	private static final String USER_EMAIL = "usuarioTeste@email.com";
 
 	static final String API = "/api/usuarios";
 	static final MediaType JASON = MediaType.APPLICATION_JSON;
@@ -45,18 +45,18 @@ public class UsuarioResourceTest {
 	LancamentoService lancamentoService;
 
 	@Test
-	public void deveAutenticarUmUsuario() throws Exception {
+	public void shouldAuthenticateAnUser() throws Exception {
 		UsuarioDTO dto = UsuarioDTO.builder()
-				.email(EMAIL_USUARIO)
-				.senha(SENHA_USUARIO)
+				.email(USER_EMAIL)
+				.senha(USER_PASSWORD)
 				.build();
 		
-		Usuario usuario = Usuario.builder()
-				.id(1L).email(EMAIL_USUARIO)
-				.senha(SENHA_USUARIO)
+		Usuario user = Usuario.builder()
+				.id(1L).email(USER_EMAIL)
+				.senha(USER_PASSWORD)
 				.build();
 		
-		Mockito.when(service.authenticate(EMAIL_USUARIO, SENHA_USUARIO)).thenReturn(usuario);
+		Mockito.when(service.authenticate(USER_EMAIL, USER_PASSWORD)).thenReturn(user);
 		
 		String json = new ObjectMapper().writeValueAsString(dto);
 		
@@ -68,19 +68,19 @@ public class UsuarioResourceTest {
 			
 		mvc.perform(request)
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.jsonPath("id").value(usuario.getId()))
-				.andExpect(MockMvcResultMatchers.jsonPath("nome").value(usuario.getNome()))
-				.andExpect(MockMvcResultMatchers.jsonPath("email").value(usuario.getEmail()));
+				.andExpect(MockMvcResultMatchers.jsonPath("id").value(user.getId()))
+				.andExpect(MockMvcResultMatchers.jsonPath("nome").value(user.getNome()))
+				.andExpect(MockMvcResultMatchers.jsonPath("email").value(user.getEmail()));
 	}
 	
 	@Test
-	public void deveRetornarBadRequestAoObterErroDeAutenticacao() throws Exception {
+	public void shouldReturnBadRequestGettingAuthenticationError() throws Exception {
 		UsuarioDTO dto = UsuarioDTO.builder()
-				.email(EMAIL_USUARIO)
-				.senha(SENHA_USUARIO)
+				.email(USER_EMAIL)
+				.senha(USER_PASSWORD)
 				.build();
 		
-		Mockito.when(service.authenticate(EMAIL_USUARIO, SENHA_USUARIO)).thenThrow(AuthenticateErrorException.class);
+		Mockito.when(service.authenticate(USER_EMAIL, USER_PASSWORD)).thenThrow(AuthenticateErrorException.class);
 		
 		String json = new ObjectMapper().writeValueAsString(dto);
 		
@@ -95,15 +95,15 @@ public class UsuarioResourceTest {
 	}
 	
 	@Test
-	public void deveSalvarUmNovoUsuario() throws Exception {
+	public void shouldSaveAnNewUser() throws Exception {
 		UsuarioDTO dto = UsuarioDTO.builder()
-				.email(EMAIL_USUARIO)
-				.senha(SENHA_USUARIO)
+				.email(USER_EMAIL)
+				.senha(USER_PASSWORD)
 				.build();
 		
 		Usuario usuario = Usuario.builder()
-				.id(1L).email(EMAIL_USUARIO)
-				.senha(SENHA_USUARIO)
+				.id(1L).email(USER_EMAIL)
+				.senha(USER_PASSWORD)
 				.build();
 		
 		Mockito.when(service.saveUser(Mockito.any(Usuario.class))).thenReturn(usuario);
@@ -124,15 +124,15 @@ public class UsuarioResourceTest {
 	}
 	
 	@Test
-	public void deveRetornarBadRequesAoTentarCriarUmNovoUsuarioInvalido() throws Exception {
+	public void shouldReturnBadRequesWhenTryingToCreateAnInvalidUser() throws Exception {
 		UsuarioDTO dto = UsuarioDTO.builder()
-				.email(EMAIL_USUARIO)
-				.senha(SENHA_USUARIO)
+				.email(USER_EMAIL)
+				.senha(USER_PASSWORD)
 				.build();
 		
-		Usuario usuario = Usuario.builder()
-				.id(1L).email(EMAIL_USUARIO)
-				.senha(SENHA_USUARIO)
+		Usuario user = Usuario.builder()
+				.id(1L).email(USER_EMAIL)
+				.senha(USER_PASSWORD)
 				.build();
 		
 		Mockito.when(service.saveUser(Mockito.any(Usuario.class))).thenThrow(BusinessRuleException.class);
