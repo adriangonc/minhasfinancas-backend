@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.adr</groupId>
 	<artifactId>minhasfinancas</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.001</version>
 	<name>minhasfinancas</name>
 	<description>Projeto para controle de fianças pessoais</description>
 

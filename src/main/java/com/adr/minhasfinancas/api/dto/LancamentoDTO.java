@@ -28,5 +28,7 @@ public class LancamentoDTO {
 	private String tipo;
 	
 	private String status;
+
+	private String categoria;
 	
 }

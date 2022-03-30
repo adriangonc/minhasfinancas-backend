@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.adr.minhasfinancas.model.enums.CategoriaLancamento;
 import com.adr.minhasfinancas.model.enums.StatusLancamento;
 import com.adr.minhasfinancas.model.enums.TipoLancamento;
 
@@ -63,6 +64,8 @@ public class Lancamento {
 	@Enumerated(value = EnumType.STRING)
 	private StatusLancamento status;
 
-	
+	@Column(name = "categoria")
+	@Enumerated(value = EnumType.STRING)
+	private CategoriaLancamento categoria;
 	
 }
