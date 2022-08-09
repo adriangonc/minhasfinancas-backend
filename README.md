@@ -1,2 +1,2 @@
 # minhasfinancas-backend
-Projeto finanças pessoais
+Projeto finanças pessoais backend
